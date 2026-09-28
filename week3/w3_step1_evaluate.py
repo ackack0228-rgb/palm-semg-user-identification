@@ -7,7 +7,8 @@
 # 을 한 번에 구해 results/metrics.json 과 results/metrics_table.md 로 저장한다.
 #
 # 평가 대상
-#   - cnn2d, resnet18        : w3_step3_baselines.py로 학습 (models/*.pt)
+#   - 베이스라인 8종         : w3_step3_baselines.py로 학습 (models/*.pt)
+#       cnn1d, cnn2d, resnet18, cnn_lstm_attn, convnext, tri_ccnn, e2cnn, cnn_bilstm
 #   - densenet161            : 2주차 step13_model_seed1.pt (같은 레시피, seed=1)
 #   - ensemble6 (참고)       : 2주차 최종 6모델 앙상블(step20과 동일 구성)
 #
@@ -27,9 +28,15 @@ from matplotlib.patches import Rectangle
 from torchvision.models import densenet161
 from sklearn.metrics import (accuracy_score, precision_recall_fscore_support,
                              confusion_matrix, classification_report)
-from common import BASE_DIR, WEEK2_DIR, SUBJECTS, DEV, build_model, count_params, predict_proba
+from common import (BASE_DIR, WEEK2_DIR, SUBJECTS, DEV, RAW_INPUT_MODELS, build_model, count_params,
+                    predict_proba, load_split)
 
 RES_DIR = os.path.join(BASE_DIR, 'results')
+# 베이스라인 8종 (논문 Table 3 순서). cnn2d·resnet18은 3주차 슬라이드 단계 3이 지정한 A·B,
+# 나머지 6종은 강의 PDF 37쪽 "비교 대상 베이스라인 8종"에 맞춰 추가했다.
+BASELINES = {'cnn1d': '1D CNN', 'cnn2d': '2D CNN', 'resnet18': 'ResNet18',
+             'cnn_lstm_attn': 'CNN-LSTM-Attention', 'convnext': 'ConvNeXt', 'tri_ccnn': 'Tri-CCNN',
+             'e2cnn': 'E2CNN', 'cnn_bilstm': 'CNN-BiLSTM'}
 FIG_DIR = os.path.join(BASE_DIR, 'figures')
 
 
@@ -130,21 +137,20 @@ if __name__ == '__main__':
 
     results = {}
 
-    # --- 단일 모델 3종 (같은 조건) ---
-    single = {
-        'cnn2d': ('2D CNN', lambda: load_state(build_model('cnn2d'), os.path.join(BASE_DIR, 'models', 'cnn2d.pt')),
-                  lambda: json.load(open(os.path.join(RES_DIR, 'train_cnn2d.json')))['train_seconds']),
-        'resnet18': ('ResNet18', lambda: load_state(build_model('resnet18'), os.path.join(BASE_DIR, 'models', 'resnet18.pt')),
-                     lambda: json.load(open(os.path.join(RES_DIR, 'train_resnet18.json')))['train_seconds']),
-        'densenet161': ('DenseNet161', lambda: week2_densenet('step13_model_seed1.pt'),
-                        lambda: train_seconds_from_week2_log('step13_train_log_seed1.txt')),
-    }
+    # --- 단일 모델 9종 (같은 조건): 제안 모델 + 논문 Table 3의 베이스라인 8종 ---
+    def baseline(key):
+        return (lambda: load_state(build_model(key), os.path.join(BASE_DIR, 'models', f'{key}.pt')),
+                lambda: json.load(open(os.path.join(RES_DIR, f'train_{key}.json')))['train_seconds'])
+    single = {key: (label, *baseline(key)) for key, label in BASELINES.items()}
+    single['densenet161'] = ('DenseNet161', lambda: week2_densenet('step13_model_seed1.pt'),
+                             lambda: train_seconds_from_week2_log('step13_train_log_seed1.txt'))
     for key, (label, loader, tsec) in single.items():
         model = loader()
-        prob = predict_proba(model, Xte)
+        X = load_split(key)[2] if key in RAW_INPUT_MODELS else Xte   # 1D CNN만 원 신호 입력
+        prob = predict_proba(model, X)
         m = metrics(yte, prob.argmax(1))
         m.update(label=label, params=count_params(model), train_seconds=tsec(),
-                 inference_ms=inference_ms([model], [Xte]))
+                 inference_ms=inference_ms([model], [X]))
         results[key] = m
         plot_cm(np.array(m['confusion_matrix']), label, os.path.join(FIG_DIR, f'confusion_{key}.png'))
         if key == 'densenet161':  # 제출물 ② confusion.png = 제안 모델

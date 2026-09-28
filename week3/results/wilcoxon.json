@@ -1,0 +1,72 @@
+{
+  "k": 10,
+  "summary": {
+    "cnn2d": {
+      "n_folds": 10,
+      "accuracy_mean": 0.5808421052631578,
+      "accuracy_std": 0.018243049752328364,
+      "weighted_f1_mean": 0.559540069784721,
+      "weighted_f1_std": 0.02081660312732026
+    },
+    "resnet18": {
+      "n_folds": 10,
+      "accuracy_mean": 0.8854736842105263,
+      "accuracy_std": 0.022343577535025843,
+      "weighted_f1_mean": 0.8842408607357204,
+      "weighted_f1_std": 0.022415771503165812
+    },
+    "densenet161": {
+      "n_folds": 10,
+      "accuracy_mean": 0.9052631578947368,
+      "accuracy_std": 0.015669721318676548,
+      "weighted_f1_mean": 0.9048857855012574,
+      "weighted_f1_std": 0.015765914028607924
+    }
+  },
+  "tests": [
+    {
+      "baseline": "cnn2d",
+      "metric": "accuracy",
+      "n": 10,
+      "wins": 10,
+      "ties": 0,
+      "mean_diff": 0.32442105263157894,
+      "statistic": 0.0,
+      "p_two_sided": 0.001953125,
+      "p_one_sided": 0.0009765625
+    },
+    {
+      "baseline": "cnn2d",
+      "metric": "weighted_f1",
+      "n": 10,
+      "wins": 10,
+      "ties": 0,
+      "mean_diff": 0.34534571571653655,
+      "statistic": 0.0,
+      "p_two_sided": 0.001953125,
+      "p_one_sided": 0.0009765625
+    },
+    {
+      "baseline": "resnet18",
+      "metric": "accuracy",
+      "n": 10,
+      "wins": 8,
+      "ties": 1,
+      "mean_diff": 0.019789473684210534,
+      "statistic": 3.0,
+      "p_two_sided": 0.01953125,
+      "p_one_sided": 0.009765625
+    },
+    {
+      "baseline": "resnet18",
+      "metric": "weighted_f1",
+      "n": 10,
+      "wins": 9,
+      "ties": 0,
+      "mean_diff": 0.020644924765537042,
+      "statistic": 4.0,
+      "p_two_sided": 0.013671875,
+      "p_one_sided": 0.0068359375
+    }
+  ]
+}
