@@ -1,6 +1,13 @@
 {
   "k": 10,
   "summary": {
+    "cnn1d": {
+      "n_folds": 10,
+      "accuracy_mean": 0.929684210526316,
+      "accuracy_std": 0.013907490159927361,
+      "weighted_f1_mean": 0.9276490926678947,
+      "weighted_f1_std": 0.014631802249006372
+    },
     "cnn2d": {
       "n_folds": 10,
       "accuracy_mean": 0.5808421052631578,
@@ -24,6 +31,28 @@
     }
   },
   "tests": [
+    {
+      "baseline": "cnn1d",
+      "metric": "accuracy",
+      "n": 10,
+      "wins": 0,
+      "ties": 0,
+      "mean_diff": -0.024421052631578954,
+      "statistic": 0.0,
+      "p_two_sided": 0.001953125,
+      "p_one_sided": 1.0
+    },
+    {
+      "baseline": "cnn1d",
+      "metric": "weighted_f1",
+      "n": 10,
+      "wins": 0,
+      "ties": 0,
+      "mean_diff": -0.022763307166637402,
+      "statistic": 0.0,
+      "p_two_sided": 0.001953125,
+      "p_one_sided": 1.0
+    },
     {
       "baseline": "cnn2d",
       "metric": "accuracy",

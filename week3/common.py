@@ -169,28 +169,32 @@ def build_model(name):
     raise ValueError(name)
 
 
+def build_raw(flist):
+    """시행 파일 목록 → 원 신호 윈도우 (N, 2, 300)와 레이블. step6 build()와 같은 순서(필터 → 윈도우 →
+    min-max)이고 CWT만 하지 않는다. 파일 목록 안에서만 윈도우를 만들므로 분할 뒤에 호출하면 누수가 없다."""
+    from step1_filter import preprocess
+    from step3_window import make_windows
+    from step4_normalize import minmax
+    from step6_dataset import load, subject_of, LABEL_OF_SUBJECT
+    X, y = [], []
+    for f in flist:
+        for w in minmax(make_windows(preprocess(load(f)))):
+            X.append(w.T)                                   # (300, 2) → (2, 300)
+            y.append(LABEL_OF_SUBJECT[subject_of(f)])
+    return np.stack(X).astype(np.float32), np.array(y, dtype=np.int64)
+
+
 def build_raw_dataset():
     """1D CNN용 원 신호 데이터셋: 2주차 step6와 똑같은 시행 분할(8:2, stratify, seed=42)·
     필터·윈도우·min-max 정규화를 거치고 CWT만 하지 않은 (N, 2, 300) 텐서.
     윈도우 순서가 step6_dataset.npz와 같으므로 레이블이 완전히 일치해야 한다(assert로 확인)."""
     import glob
     from sklearn.model_selection import train_test_split
-    from step1_filter import preprocess
-    from step3_window import make_windows
-    from step4_normalize import minmax
-    from step6_dataset import load, subject_of, LABEL_OF_SUBJECT, DATA_DIR
+    from step6_dataset import subject_of, LABEL_OF_SUBJECT, DATA_DIR
     files = sorted(glob.glob(os.path.join(DATA_DIR, 'data', '*', '*.csv')))
     labels = [LABEL_OF_SUBJECT[subject_of(f)] for f in files]
     tr_files, te_files = train_test_split(files, test_size=0.2, stratify=labels, random_state=42)
-
-    def build(flist):
-        X, y = [], []
-        for f in flist:
-            for w in minmax(make_windows(preprocess(load(f)))):
-                X.append(w.T)                                   # (300, 2) → (2, 300)
-                y.append(LABEL_OF_SUBJECT[subject_of(f)])
-        return np.stack(X).astype(np.float32), np.array(y, dtype=np.int64)
-    return build(tr_files) + build(te_files)
+    return build_raw(tr_files) + build_raw(te_files)
 
 
 def load_split(name):

@@ -7,7 +7,7 @@
 # 방법
 #   - 250개 시행 파일을 StratifiedKFold(10, shuffle=True, random_state=42)로 나눈다
 #     (w3_step4_cv.py와 같은 원칙: 윈도우가 아니라 "시행"을 나눔 → 누수 없음).
-#   - 한 fold 안에서 세 모델(cnn2d, resnet18, densenet161)을 같은 학습/검증 시행으로 학습한다
+#   - 한 fold 안에서 네 모델(cnn1d, cnn2d, resnet18, densenet161)을 같은 학습/검증 시행으로 학습한다
 #     → fold별로 짝지어진(paired) 결과가 나와 Wilcoxon 부호순위 검정을 쓸 수 있다.
 #   - 학습 조건은 common.train_model() (45에폭, seed 1)로 세 모델 모두 동일.
 #   - 비교 지표: 논문과 같이 정확도와 가중(weighted) F1. macro F1도 함께 저장.
@@ -27,14 +27,17 @@ import numpy as np
 from scipy.stats import wilcoxon
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import accuracy_score, f1_score
-from common import BASE_DIR, WEEK2_DIR, set_seed, build_model, train_model, predict_proba
+from common import (BASE_DIR, WEEK2_DIR, RAW_INPUT_MODELS, set_seed, build_model, train_model,
+                    predict_proba, build_raw)
 from step6_dataset import build, subject_of, LABEL_OF_SUBJECT
 
 K = 10
 SEED = 1
-MODELS = ['cnn2d', 'resnet18', 'densenet161']  # 빠른 모델부터 (fold 하나 안에서)
+# 1D CNN은 나중에 추가(단일 split에서 DenseNet161보다 높게 나와 같은 fold로 짝지어 검정하려고).
+# 같은 파일 목록 + 같은 random_state라 fold 구성은 먼저 끝낸 세 모델과 완전히 같다.
+MODELS = ['cnn1d', 'cnn2d', 'resnet18', 'densenet161']  # 빠른 모델부터 (fold 하나 안에서)
 PROPOSED = 'densenet161'
-LABELS = {'cnn2d': '2D CNN', 'resnet18': 'ResNet18', 'densenet161': 'DenseNet161'}
+LABELS = {'cnn1d': '1D CNN', 'cnn2d': '2D CNN', 'resnet18': 'ResNet18', 'densenet161': 'DenseNet161'}
 OUT = os.path.join(BASE_DIR, 'results', 'cv10_folds.json')
 
 
@@ -71,6 +74,7 @@ def report(state):
             b = np.array([base[k][metric] for k in folds])
             two = wilcoxon(a, b)                          # 양측 검정 (논문과 같은 기준 p < 0.05)
             one = wilcoxon(a, b, alternative='greater')   # 참고: "제안 모델이 더 크다" 단측
+            # (베이스라인이 더 높으면 이 단측 p는 1에 가깝다 — 방향은 표의 '더 높은 쪽' 칸으로 본다)
             res['tests'].append({'baseline': name, 'metric': metric, 'n': len(folds),
                                  'wins': int((a > b).sum()), 'ties': int((a == b).sum()),
                                  'mean_diff': float((a - b).mean()),
@@ -79,7 +83,7 @@ def report(state):
     with open(os.path.join(BASE_DIR, 'results', 'wilcoxon.json'), 'w', encoding='utf-8') as f:
         json.dump(res, f, indent=2)
 
-    lines = [f'{K}-fold 교차검증 (시행 단위, 세 모델 같은 fold)', '',
+    lines = [f'{K}-fold 교차검증 (시행 단위, 모든 모델 같은 fold)', '',
              '| Model | Accuracy 평균 ± 표준편차 | Weighted F1 평균 ± 표준편차 | 완료 fold |',
              '|---|---|---|---|']
     for name, s in res['summary'].items():
@@ -87,12 +91,13 @@ def report(state):
                      f"{s['weighted_f1_mean'] * 100:.2f} ± {s['weighted_f1_std'] * 100:.2f}% | {s['n_folds']}/{K} |")
     if res['tests']:
         lines += ['', 'Wilcoxon 부호순위 검정 (DenseNet161 vs 베이스라인, 유의수준 0.05)', '',
-                  '| 비교 | 지표 | DenseNet161 승 / fold | 평균 차이 | 양측 p | 단측 p | 유의 |',
-                  '|---|---|---|---|---|---|---|']
+                  '| 비교 | 지표 | DenseNet161 승 / fold | 평균 차이 | 양측 p | 단측 p | 유의 | 더 높은 쪽 |',
+                  '|---|---|---|---|---|---|---|---|']
         for t in res['tests']:
             lines.append(f"| DenseNet161 vs {LABELS[t['baseline']]} | {t['metric']} | {t['wins']} / {t['n']} | "
                          f"{t['mean_diff'] * 100:+.2f}%p | {t['p_two_sided']:.4f} | {t['p_one_sided']:.4f} | "
-                         f"{'O' if t['p_two_sided'] < 0.05 else 'X'} |")
+                         f"{'O' if t['p_two_sided'] < 0.05 else 'X'} | "
+                         f"{'DenseNet161' if t['mean_diff'] > 0 else LABELS[t['baseline']]} |")
     with open(os.path.join(BASE_DIR, 'results', 'wilcoxon_table.md'), 'w', encoding='utf-8') as f:
         f.write('\n'.join(lines) + '\n')
     print('\n'.join(lines), flush=True)
@@ -122,11 +127,15 @@ if __name__ == '__main__':
         tr_files = [files[i] for i in tr_i]
         va_files = [files[i] for i in va_i]
         assert not set(tr_files) & set(va_files)  # 시행 중복 0건 확인
-        Xtr, ytr = build(tr_files)
-        Xva, yva = build(va_files)
-        print(f'fold {k}: train {Xtr.shape}  val {Xva.shape}  todo {todo}', flush=True)
+        data = {}
+        if any(m in RAW_INPUT_MODELS for m in todo):
+            data['raw'] = build_raw(tr_files) + build_raw(va_files)
+        if any(m not in RAW_INPUT_MODELS for m in todo):
+            data['cwt'] = build(tr_files) + build(va_files)
+        print(f'fold {k}: val {len(va_files)} trials  todo {todo}', flush=True)
 
         for name in todo:
+            Xtr, ytr, Xva, yva = data['raw' if name in RAW_INPUT_MODELS else 'cwt']
             set_seed(SEED)
             model = build_model(name)  # fold·모델마다 새 모델
             model, sec, _ = train_model(model, Xtr, ytr, seed=SEED, tag=f'[fold {k} {name}]')
@@ -141,6 +150,6 @@ if __name__ == '__main__':
             state['runs'].append(row)
             save(state)
             del model
-        del Xtr, Xva
+        del data
 
     report(state)

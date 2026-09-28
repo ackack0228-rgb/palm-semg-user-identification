@@ -271,6 +271,96 @@
       "macro_f1": 0.9104444174945348,
       "train_seconds": 1573.2,
       "n_val": 475
+    },
+    {
+      "fold": 1,
+      "model": "cnn1d",
+      "accuracy": 0.9221052631578948,
+      "weighted_f1": 0.9196159237740085,
+      "macro_f1": 0.9196159237740085,
+      "train_seconds": 56.9,
+      "n_val": 475
+    },
+    {
+      "fold": 2,
+      "model": "cnn1d",
+      "accuracy": 0.9136842105263158,
+      "weighted_f1": 0.9110345219078501,
+      "macro_f1": 0.91103452190785,
+      "train_seconds": 58.3,
+      "n_val": 475
+    },
+    {
+      "fold": 3,
+      "model": "cnn1d",
+      "accuracy": 0.9052631578947369,
+      "weighted_f1": 0.9024557415205019,
+      "macro_f1": 0.902455741520502,
+      "train_seconds": 57.6,
+      "n_val": 475
+    },
+    {
+      "fold": 4,
+      "model": "cnn1d",
+      "accuracy": 0.9410526315789474,
+      "weighted_f1": 0.9404062890672136,
+      "macro_f1": 0.9404062890672134,
+      "train_seconds": 58.1,
+      "n_val": 475
+    },
+    {
+      "fold": 5,
+      "model": "cnn1d",
+      "accuracy": 0.9368421052631579,
+      "weighted_f1": 0.934067995313204,
+      "macro_f1": 0.9340679953132038,
+      "train_seconds": 59.3,
+      "n_val": 475
+    },
+    {
+      "fold": 6,
+      "model": "cnn1d",
+      "accuracy": 0.9242105263157895,
+      "weighted_f1": 0.9230022917199007,
+      "macro_f1": 0.9230022917199008,
+      "train_seconds": 59.3,
+      "n_val": 475
+    },
+    {
+      "fold": 7,
+      "model": "cnn1d",
+      "accuracy": 0.9242105263157895,
+      "weighted_f1": 0.9204554246738945,
+      "macro_f1": 0.9204554246738947,
+      "train_seconds": 58.5,
+      "n_val": 475
+    },
+    {
+      "fold": 8,
+      "model": "cnn1d",
+      "accuracy": 0.9368421052631579,
+      "weighted_f1": 0.9352545353241627,
+      "macro_f1": 0.9352545353241626,
+      "train_seconds": 58.7,
+      "n_val": 475
+    },
+    {
+      "fold": 9,
+      "model": "cnn1d",
+      "accuracy": 0.9557894736842105,
+      "weighted_f1": 0.9556223447113109,
+      "macro_f1": 0.9556223447113108,
+      "train_seconds": 58.8,
+      "n_val": 475
+    },
+    {
+      "fold": 10,
+      "model": "cnn1d",
+      "accuracy": 0.9368421052631579,
+      "weighted_f1": 0.9345758586669022,
+      "macro_f1": 0.9345758586669021,
+      "train_seconds": 58.8,
+      "n_val": 475
     }
   ]
 }
