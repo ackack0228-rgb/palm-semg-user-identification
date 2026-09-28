@@ -1,0 +1,47 @@
+{
+  "model": "densenet161",
+  "seed": 1,
+  "folds": [
+    {
+      "fold": 1,
+      "accuracy": 0.9073684210526316,
+      "macro_f1": 0.9072462682106869,
+      "train_seconds": 1367.9,
+      "n_val": 950
+    },
+    {
+      "fold": 2,
+      "accuracy": 0.8810526315789474,
+      "macro_f1": 0.8815089785086491,
+      "train_seconds": 1324.7,
+      "n_val": 950
+    },
+    {
+      "fold": 3,
+      "accuracy": 0.9084210526315789,
+      "macro_f1": 0.9088389849744491,
+      "train_seconds": 1322.4,
+      "n_val": 950
+    },
+    {
+      "fold": 4,
+      "accuracy": 0.9210526315789473,
+      "macro_f1": 0.9209288069022377,
+      "train_seconds": 1338.4,
+      "n_val": 950
+    },
+    {
+      "fold": 5,
+      "accuracy": 0.92,
+      "macro_f1": 0.9193267286033835,
+      "train_seconds": 1327.8,
+      "n_val": 950
+    }
+  ],
+  "summary": {
+    "accuracy_mean": 0.907578947368421,
+    "accuracy_std": 0.014423741585651047,
+    "macro_f1_mean": 0.9075699534398813,
+    "macro_f1_std": 0.014124944995315867
+  }
+}

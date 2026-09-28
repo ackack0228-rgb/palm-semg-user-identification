@@ -57,7 +57,7 @@
     "label": "2D CNN",
     "params": 19717,
     "train_seconds": 58.9,
-    "inference_ms": 0.40872812271118164
+    "inference_ms": 0.4062533378601074
   },
   "resnet18": {
     "accuracy": 0.888421052631579,
@@ -117,7 +117,7 @@
     "label": "ResNet18",
     "params": 11179077,
     "train_seconds": 229.4,
-    "inference_ms": 4.084510803222656
+    "inference_ms": 3.7633585929870605
   },
   "densenet161": {
     "accuracy": 0.9136842105263158,
@@ -177,7 +177,7 @@
     "label": "DenseNet161",
     "params": 26483045,
     "train_seconds": 1400.1,
-    "inference_ms": 34.1154670715332
+    "inference_ms": 31.362249851226807
   },
   "ensemble6": {
     "accuracy": 0.9273684210526316,
@@ -237,6 +237,6 @@
     "label": "DenseNet161 x6 ensemble",
     "params": 158898270,
     "train_seconds": null,
-    "inference_ms": 209.70134735107422
+    "inference_ms": 188.44815731048584
   }
 }
