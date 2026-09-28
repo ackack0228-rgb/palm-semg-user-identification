@@ -1,0 +1,13 @@
+confusion matrix (rows=true, cols=pred), step17_model_scale64.pt:
+         A     B     C     D     E
+true A:  190     0     0     0     0
+true B:    2   171     5     4     8
+true C:    0     3   182     4     1
+true D:    0     6    16   166     2
+true E:    3    20     6     7   154
+
+  A: correct=190/190  misclassified_as: none
+  B: correct=171/190  misclassified_as: E=8, C=5, D=4, A=2
+  C: correct=182/190  misclassified_as: D=4, B=3, E=1
+  D: correct=166/190  misclassified_as: C=16, B=6, E=2
+  E: correct=154/190  misclassified_as: B=20, D=7, C=6, A=3

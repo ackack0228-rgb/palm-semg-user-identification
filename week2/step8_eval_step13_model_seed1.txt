@@ -1,0 +1,8 @@
+checkpoint: step13_model_seed1.pt
+test_accuracy: 91.37% (868/950)
+per_subject_accuracy:
+  A: 189/190 (99.5%)
+  B: 182/190 (95.8%)
+  C: 174/190 (91.6%)
+  D: 171/190 (90.0%)
+  E: 152/190 (80.0%)

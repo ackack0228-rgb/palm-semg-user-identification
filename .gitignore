@@ -1,0 +1,22 @@
+# 가상환경 / 캐시
+.venv/
+__pycache__/
+
+# 데이터셋 (README의 git clone 명령으로 받음)
+data/
+
+# 대용량 중간 결과·가중치 (GitHub 100MB 제한 초과, 스크립트로 재생성 가능)
+*.npz
+*.npy
+*.pt
+
+# 실행 콘솔 로그 (학습 로그는 *_log*.txt / results/*.json 으로 따로 저장됨)
+*.log
+
+# 제출 문서 (개인정보 포함, 저장소와 별도로 제출)
+*.docx
+*.pdf
+
+# 1주차 제출 리포트 생성용 초안 스크립트 (재현과 무관, 개인정보 포함)
+week1/generate_docx.js
+week1/generate_report.py

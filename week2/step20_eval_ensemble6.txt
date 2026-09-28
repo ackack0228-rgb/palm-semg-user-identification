@@ -1,0 +1,7 @@
+checkpoints: step10_model_45epoch.pt, step11_model_45epoch.pt, step13_model_seed1.pt, step13_model_seed2.pt, step13_model_seed3.pt, step17_model_scale64.pt (scale64)
+test_accuracy: 92.74% (881/950)
+A: 189/190 (99.5%)
+B: 180/190 (94.7%)
+C: 181/190 (95.3%)
+D: 178/190 (93.7%)
+E: 153/190 (80.5%)

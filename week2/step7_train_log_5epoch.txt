@@ -1,0 +1,5 @@
+epoch 1/5  loss=0.9695  elapsed=322.0s
+epoch 2/5  loss=0.7206  elapsed=610.7s
+epoch 3/5  loss=0.5660  elapsed=1033.8s
+epoch 4/5  loss=0.5062  elapsed=1453.5s
+epoch 5/5  loss=0.4263  elapsed=1807.0s
